@@ -126,7 +126,7 @@
                 "showReuseMessage": true,
                 "clear": true
             },
-            "problemMatcher": []
+            "problemMatcher": ["$gcc"]
         },
         {
             "label": "build_qemu",
@@ -139,7 +139,7 @@
                 "all",
                 "-j12"
             ],
-            "problemMatcher": []
+            "problemMatcher": ["$gcc"]
         },
         {
             "label": "kill_qemu",
