@@ -47,7 +47,6 @@
             "label": "start_debugging",
             "dependsOn": [
                 "kill_qemu",
-                "sleep",
                 "start_qemu",
                 "sleep"
             ],
@@ -126,7 +125,10 @@
                 "showReuseMessage": true,
                 "clear": true
             },
-            "problemMatcher": ["$gcc"]
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": ["relative", "${workspaceRoot}/optee_os"]
+            }
         },
         {
             "label": "build_qemu",
@@ -139,12 +141,16 @@
                 "all",
                 "-j12"
             ],
-            "problemMatcher": ["$gcc"]
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": ["relative", "${workspaceRoot}/optee_os"]
+            },
+            "dependsOn": ["checkpatch"]
         },
         {
             "label": "kill_qemu",
             "type": "shell",
-            "command": "pkill --signal SIGKILL qemu"
+            "command": "pkill --signal SIGINT qemu && sleep 4 && pkill --signal SIGKILL qemu || true"
         },
         {
             "label": "sleep",
