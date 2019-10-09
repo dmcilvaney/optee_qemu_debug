@@ -127,8 +127,14 @@
             },
             "problemMatcher": {
                 "base": "$gcc",
-                "fileLocation": ["relative", "${workspaceRoot}/optee_os"]
-            }
+                "fileLocation": [
+                    "relative",
+                    "${workspaceRoot}/optee_os"
+                ]
+            },
+            "dependsOn": [
+                "checkpatch"
+            ]
         },
         {
             "label": "build_qemu",
@@ -141,11 +147,10 @@
                 "all",
                 "-j12"
             ],
-            "problemMatcher": {
-                "base": "$gcc",
-                "fileLocation": ["relative", "${workspaceRoot}/optee_os"]
-            },
-            "dependsOn": ["checkpatch"]
+            "dependsOn": [
+                "build_optee"
+            ],
+            "problemMatcher": []
         },
         {
             "label": "kill_qemu",
