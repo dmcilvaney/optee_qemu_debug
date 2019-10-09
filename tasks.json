@@ -1,0 +1,163 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "checkpatch",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceRoot}/optee_os"
+            },
+            "command": "./scripts/checkpatch.sh || true",
+            "presentation": {
+                "echo": true,
+                "reveal": "never",
+                "focus": false,
+                "panel": "dedicated",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": {
+                "fileLocation": [
+                    "relative",
+                    "${workspaceRoot}/optee_os"
+                ],
+                "owner": "checkpatch",
+                "pattern": [
+                    {
+                        "regexp": "^(CHECK|ERROR|WARNING): (.*)$",
+                        "message": 2,
+                        "severity": 1
+                    },
+                    {
+                        "regexp": "^.*FILE: (.*):(.*):$",
+                        "file": 1,
+                        "line": 2
+                    }
+                ],
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".",
+                    "endsPattern": "^total:.*errors,.*warnings,.*checks,.*lines checked"
+                }
+            }
+        },
+        {
+            "label": "start_debugging",
+            "dependsOn": [
+                "kill_qemu",
+                "sleep",
+                "start_qemu",
+                "sleep"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
+            "label": "start_qemu",
+            "type": "process",
+            "options": {
+                "cwd": "${workspaceRoot}/out/bin/"
+            },
+            "command": "../../qemu/arm-softmmu/qemu-system-arm",
+            "args": [
+                "-nographic",
+                "-serial",
+                "pty",
+                "-serial",
+                "pty",
+                "-smp",
+                "1",
+                "-s",
+                "-S",
+                "-machine",
+                "virt,secure=on",
+                "-cpu",
+                "cortex-a15",
+                "-d",
+                "unimp",
+                "-semihosting-config",
+                "enable,target=native",
+                "-m",
+                "1057",
+                "-bios",
+                "bl1.bin",
+                "-netdev",
+                "user,id=vmnic,hostfwd=tcp::12345-:12345",
+                "-device",
+                "virtio-net-device,netdev=vmnic"
+            ],
+            "isBackground": true,
+            "problemMatcher": [
+                {
+                    "pattern": [
+                        {
+                            "regexp": ".",
+                            "file": 1,
+                            "location": 2,
+                            "message": 3
+                        }
+                    ],
+                    "background": {
+                        "activeOnStart": false,
+                        "beginsPattern": "^.*device redirected to .*$",
+                        "endsPattern": "^(qemu).*$"
+                    }
+                }
+            ]
+        },
+        {
+            "label": "build_optee",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "-C",
+                "${workspaceRoot}/build/",
+                "GDBSERVER=y",
+                "optee-os",
+                "-j1"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "dedicated",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "build_qemu",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "-C",
+                "${workspaceRoot}/build/",
+                "GDBSERVER=y",
+                "all",
+                "-j12"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "kill_qemu",
+            "type": "shell",
+            "command": "pkill --signal SIGKILL qemu"
+        },
+        {
+            "label": "sleep",
+            "type": "shell",
+            "command": "sleep 4",
+            "presentation": {
+                "echo": true,
+                "reveal": "never",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            }
+        }
+    ]
+}

@@ -1,0 +1,27 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [    
+        {
+            "type": "gdb",
+            "request": "attach",
+            "name": "QEMU",
+            "executable": "${workspaceRoot}/optee_os/out/arm/core/tee.elf",
+            "target": "localhost:1234",
+            "cwd": "${workspaceRoot}",
+            "remote": true,
+            "gdbpath": "${workspaceRoot}/toolchains/aarch32/bin/arm-linux-gnueabihf-gdb",
+            "valuesFormatting": "parseText",
+            "autorun": [
+                "add-symbol-file ${workspaceRoot}/optee_os/out/arm/ldelf/ldelf.elf 0x104000",
+                "add-symbol-file ${workspaceRoot}/out-br/build/optee_test-1.0/ta/os_test/out/5b9e0e40-2636-11e1-ad9e-0002a5d5c51b.elf 0x153000",
+                "add-symbol-file ${workspaceRoot}/out-br/build/optee_test-1.0/ta/os_test_lib/out/ffd2bded-ab7d-4988-95ee-e4962fff7154.elf 0x11f000",                
+                "break system_open_ta_binary"
+            ],
+            "preLaunchTask": "start_debugging",
+            "postDebugTask": "kill_qemu"
+        }
+    ]
+}
